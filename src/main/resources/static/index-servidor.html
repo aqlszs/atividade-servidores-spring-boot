@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trabalho de Servidores - Java e Spring Boot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f5f5f5; font-family: Arial, sans-serif; }
+    .container { max-width: 960px; }
+    header { background: #e9ecef; border: 1px solid #ddd; }
+    section { background: white; border: 1px solid #ddd; padding: 22px; margin-bottom: 20px; }
+    h2 { font-size: 1.45rem; border-bottom: 1px solid #ddd; padding-bottom: 9px; margin-bottom: 18px; }
+    h3 { font-size: 1.12rem; margin-top: 20px; }
+    pre { background: #eee; border: 1px solid #ccc; padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .nav-link { color: #135ba1; }
+    .nav-link:hover { text-decoration: underline; }
+    li { margin-bottom: 7px; }
+  </style>
+</head>
+<body>
+<div class="container py-4">
+  <header class="p-4 mb-3 rounded">
+    <h1 class="h3" id="titulo"></h1>
+    <p class="mb-1">Disciplina: Programação Web — Atividade Prática: Servidores</p>
+    <p class="mb-0"><strong>Integrantes:</strong> <span id="integrantes"></span></p>
+  </header>
+  <nav class="bg-white border rounded p-2 mb-3" aria-label="Seções do trabalho">
+    <ul class="nav flex-wrap">
+      <li class="nav-item"><a class="nav-link" href="#pontos">Pontos fortes</a></li>
+      <li class="nav-item"><a class="nav-link" href="#setup">Pré-requisitos</a></li>
+      <li class="nav-item"><a class="nav-link" href="#codigo">Código</a></li>
+      <li class="nav-item"><a class="nav-link" href="#conclusao">Conclusão</a></li>
+      <li class="nav-item"><a class="nav-link" href="#referencias">Referências</a></li>
+    </ul>
+  </nav>
+  <main>
+    <section id="pontos" class="rounded">
+      <h2>1. Pontos fortes e filosofia</h2>
+      <h3>Vantagens</h3><ul id="vantagens"></ul>
+      <h3>Caso de uso ideal</h3><div id="caso"></div>
+    </section>
+    <section id="setup" class="rounded">
+      <h2>2. Pré-requisitos e setup</h2>
+      <h3>Ferramentas</h3>
+      <div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr><th>Ferramenta</th><th>Versão / opções</th><th>Finalidade</th></tr></thead><tbody id="ferramentas"></tbody></table></div>
+      <h3>Passos para configurar o servidor</h3><ol id="passos"></ol>
+      <h3>Comandos</h3><div id="comandos"></div>
+      <p><strong>Endereço padrão:</strong> <code id="endereco"></code></p>
+    </section>
+    <section id="codigo" class="rounded">
+      <h2>3. Código do servidor</h2>
+      <p id="explicacao"></p><pre><code id="codigoFonte"></code></pre>
+    </section>
+    <section id="conclusao" class="rounded">
+      <h2>4. Conclusão</h2>
+      <h3>Dificuldade inicial</h3><p id="dificuldade"></p>
+      <h3>Avaliação</h3><p id="avaliacao"></p>
+      <h3>Recomendação</h3><p id="recomendacao"></p>
+    </section>
+    <section id="referencias" class="rounded"><h2>Referências</h2><ul id="links"></ul></section>
+  </main>
+  <footer class="text-center text-muted small pb-3">Trabalho de Programação Web — Java e Spring Boot</footer>
+</div>
+<script>
+  async function carregarDocumentacao() {
+  const resposta = await fetch('/');
+  if (!resposta.ok) throw new Error('Erro HTTP ' + resposta.status);
+  const dados = await resposta.json();
+  const el = id => document.getElementById(id);
+  const preencher = (id, valor) => { el(id).textContent = valor ?? 'A preencher pelo grupo.'; };
+  const adicionar = (pai, tag, texto) => {
+    const novo = document.createElement(tag);
+    novo.textContent = texto;
+    pai.appendChild(novo);
+    return novo;
+  };
+
+  preencher('titulo', dados.titulo.titulo);
+  preencher('integrantes', dados.titulo.integrantes.join(' e '));
+
+  dados.secao1.vantagens.forEach(v => {
+    const li = adicionar(el('vantagens'), 'li', '');
+    adicionar(li, 'strong', v.nome + ': ');
+    li.appendChild(document.createTextNode(v.descricao));
+  });
+  const caso = dados.secao1.casoUsoIdeal;
+  [ ['Exemplo', caso.nome], ['Contexto', caso.contexto], ['Aplicação', caso.aplicacao], ['Justificativa', caso.justificativa] ].forEach(([rotulo, valor]) => {
+    const p = adicionar(el('caso'), 'p', '');
+    adicionar(p, 'strong', rotulo + ': ');
+    p.appendChild(document.createTextNode(valor));
+  });
+
+  dados.secao2.ferramentasRequisitos.forEach(f => {
+    const tr = document.createElement('tr');
+    [f.nome, f.versaoSugerida ?? (f.opcoes || []).join(', ') ?? '-', f.finalidade].forEach(v => adicionar(tr, 'td', v || '-'));
+    el('ferramentas').appendChild(tr);
+  });
+  dados.secao2.passos.forEach(p => adicionar(el('passos'), 'li', p.replace(/^\d+\.\s*/, '')));
+  dados.secao2.comandos.forEach(c => {
+    adicionar(el('comandos'), 'p', c.descricao + ' (' + c.ambiente + ')');
+    adicionar(el('comandos'), 'pre', c.comando);
+  });
+  preencher('endereco', dados.secao2.enderecoLocalPadrao);
+  preencher('explicacao', dados.secao3.explicacao);
+  preencher('codigoFonte', dados.secao3.codigoFonte ?? 'O código será adicionado pelo integrante responsável pelo servidor.');
+  preencher('dificuldade', dados.secao4.principalDificuldadeInicial);
+  preencher('avaliacao', dados.secao4.avaliacao);
+  preencher('recomendacao', dados.secao4.recomendacaoFinal);
+  dados.referencias.forEach(ref => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = ref.url; a.textContent = ref.titulo; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    li.appendChild(a); el('links').appendChild(li);
+  });
+  }
+  carregarDocumentacao().catch(erro => {
+    console.error(erro);
+    document.getElementById('titulo').textContent = 'Erro ao carregar documentação';
+    const aviso = document.createElement('div');
+    aviso.className = 'alert alert-danger';
+    aviso.textContent = 'Não foi possível carregar os dados do servidor. Verifique se o Spring Boot está em execução e se /api/documentacao responde corretamente.';
+    document.querySelector('main').prepend(aviso);
+  });
+</script>
+</body>
+</html>

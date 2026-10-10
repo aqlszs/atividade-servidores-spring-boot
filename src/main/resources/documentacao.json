@@ -1,0 +1,76 @@
+{
+  "titulo": {
+    "titulo": "Java com Spring Boot",
+    "integrantes": ["Matheus Cadore", "Aquiles Souza"]
+  },
+  "secao1": {
+    "titulo": "Pontos fortes e filosofia",
+    "vantagens": [
+      {"nome": "Configuração automática", "descricao": "Configura componentes com base nas dependências e nas propriedades disponíveis, reduzindo a configuração manual inicial."},
+      {"nome": "Produtividade", "descricao": "Starters e convenções ajudam a iniciar projetos e desenvolver funcionalidades web com menos configuração repetitiva."},
+      {"nome": "Servidor web incorporado", "descricao": "Uma aplicação web pode ser executada com servidor incorporado, como o Tomcat, sem instalação separada de um servidor de aplicações."},
+      {"nome": "Ecossistema Spring", "descricao": "Facilita a integração com ferramentas do ecossistema para segurança, acesso a dados e comunicação entre serviços."},
+      {"nome": "Organização e manutenção", "descricao": "Suporta a separação de responsabilidades em controladores, serviços e repositórios, favorecendo a manutenção de sistemas maiores."}
+    ],
+    "casoUsoIdeal": {
+      "nome": "Sistema web de gerenciamento de pedidos",
+      "contexto": "Uma empresa precisa cadastrar clientes, consultar produtos, registrar pedidos e consultar históricos de compras.",
+      "aplicacao": "Spring Boot pode disponibilizar endpoints HTTP, implementar regras de negócio e integrar a aplicação a um banco de dados.",
+      "justificativa": "A solução se beneficia de uma arquitetura organizada, integração com persistência de dados e facilidade de evolução das funcionalidades."
+    }
+  },
+  "secao2": {
+    "titulo": "Pré-requisitos e setup",
+    "ferramentasRequisitos": [
+      {"nome": "JDK", "versaoSugerida": "21", "finalidade": "Compilar e executar aplicações Java."},
+      {"nome": "Spring Boot", "versaoSugerida": "Definida no Spring Initializr", "finalidade": "Framework para criar a aplicação web."},
+      {"nome": "Maven", "versaoSugerida": "Compatível com a versão escolhida do Spring Boot", "finalidade": "Gerenciar dependências e executar o projeto."},
+      {"nome": "IDE", "opcoes": ["IntelliJ IDEA", "Visual Studio Code"], "finalidade": "Editar e organizar o código-fonte."},
+      {"nome": "Spring Initializr", "url": "https://start.spring.io/", "finalidade": "Gerar a estrutura inicial do projeto."}
+    ],
+    "passos": [
+      "1. Acessar https://adoptium.net/temurin/releases/?version=21, selecionar Windows x64, JDK 21 e baixar o instalador MSI.",
+      "2. Acessar https://start.spring.io/ e selecionar Maven, Java, Spring Boot estável compatível com Java 21, Packaging Jar e Java 21.",
+      "3. Adicionar a dependência Spring Web MVC (ou Spring Web, conforme a versão). Thymeleaf e Spring Boot DevTools são opcionais; não é necessário banco de dados.",
+      "4. Clicar em Generate, extrair o ZIP e abrir a pasta do projeto no IntelliJ em File > Open. Aguardar a sincronização do Maven.",
+      "5. Localizar a classe principal 'ServidoresApplication.java'. Essa classe contém a anotação @SpringBootApplication e o método main().",
+      "6. Criar um pacote chamado 'controller'. Nesse pacote, criar a classe 'Controller.java'. Adicionar a anotação @RestController à classe para indicar que ela receberá requisições HTTP.",
+      "7. Dentro do pacote controller, criar a classe DocumentacaoController.java, com a anotação @Controller do Spring.",
+      "8. Adicionar a anotação @RestController à classe DocumentacaoController. Essa anotação identifica a classe como um controlador REST, responsável por receber requisições HTTP e retornar respostas diretamente ao cliente.",
+      "9. Dentro de DocumentacaoController, criar um método público chamado obterDocumentacao(), com retorno ResponseEntity<String>. Adicionar a anotação @GetMapping(value = \"/\", produces = MediaType.APPLICATION_JSON_VALUE). Essa anotação configura a rota principal GET /, que será responsável por disponibilizar a documentação no formato JSON.",
+      "10. Criar o arquivo documentacao.json dentro de src/main/resources/. Esse arquivo sera o json de retorno",
+      "11. No método obterDocumentacao(), utilizar ClassPathResource para localizar o arquivo documentacao.json. Utilizar getInputStream() para ler o arquivo e StandardCharsets.UTF_8 para converter seu conteúdo em uma String.",
+      "12. Configurar o método para retornar ResponseEntity.ok(), definindo o Content-Type como application/json e utilizando o conteúdo do arquivo documentacao.json como corpo da resposta HTTP. Tratar possíveis erros de leitura para evitar que o servidor retorne uma resposta incorreta.",
+      "13. Verificar o arquivo application.properties, localizado em src/main/resources/. Caso seja necessário definir explicitamente a porta do servidor, adicionar a propriedade server.port=8080. Caso contrário, o Spring Boot utilizará a porta 8080 por padrão.",
+      "14. Executar a classe principal ServidoresApplication.java pelo botão Run do IntelliJ IDEA. Alternativamente, abrir o terminal na pasta do projeto e executar o comando .\\mvnw.cmd spring-boot:run. O Spring Boot inicializará o servidor HTTP incorporado.",
+      "15. Acessar http://localhost:8080/ no navegador. A aplicação deverá receber a requisição HTTP GET /, executar o método obterDocumentacao() e retornar o conteúdo completo do arquivo documentacao.json com status HTTP 200 OK e Content-Type application/json."
+    ],
+    "comandos": [
+      {"descricao": "Verificar a versão do Java", "comando": "java -version", "ambiente": "Windows, Linux ou macOS"},
+      {"descricao": "Verificar o Maven global, se instalado", "comando": "mvn -version", "ambiente": "Windows, Linux ou macOS"},
+      {"descricao": "Executar com Maven Wrapper", "comando": ".\\mvnw.cmd spring-boot:run", "ambiente": "Windows PowerShell"},
+      {"descricao": "Executar com Maven Wrapper", "comando": "./mvnw spring-boot:run", "ambiente": "Linux ou macOS"}
+    ],
+    "enderecoLocalPadrao": "http://localhost:8080/"
+  },
+  "secao3": {
+    "titulo": "O código do servidor",
+    "codigoFonte": "// ServidoresApplication.java\npackage com.example.servidores;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\n\n@SpringBootApplication\npublic class ServidoresApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(ServidoresApplication.class, args);\n    }\n\n}\n\n// DocumentacaoController.java\npackage com.example.servidores.controller;\n\nimport java.io.IOException;\nimport java.nio.charset.StandardCharsets;\n\n\nimport org.springframework.core.io.ClassPathResource;\nimport org.springframework.http.MediaType;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class DocumentacaoController {\n\n    @GetMapping(value = \"/\", produces = MediaType.APPLICATION_JSON_VALUE)\n    public ResponseEntity<String> obterDocumentacao() {\n        try{\n            ClassPathResource arquivo = new ClassPathResource(\"documentacao.json\");\n            byte[] bytes = arquivo.getInputStream().readAllBytes();\n            String json = new String(bytes, StandardCharsets.UTF_8);\n\n            return ResponseEntity.ok()\n                    .contentType(MediaType.APPLICATION_JSON)\n                    .body(json);\n        } catch (IOException erro) {\n            return ResponseEntity.internalServerError()\n                    .contentType(MediaType.APPLICATION_JSON)\n                    .body(\"{\\\"erro\\\": \\\"Não foi possível ler o arquivo documentacao.json\\\"}\");\n        }\n    }\n}",
+    "linguagemCodigo": "java",
+    "explicacao": "O servidor é formado por duas classes. A ServidoresApplication é a classe principal: a anotação @SpringBootApplication ativa a configuração automática e o método main() inicia a aplicação, que sobe o servidor Tomcat incorporado na porta 8080. A DocumentacaoController é o controlador REST que atende a rota GET /. O método obterDocumentacao() localiza o arquivo documentacao.json em src/main/resources com ClassPathResource, lê seu conteúdo e o converte em texto com UTF-8. Quando a leitura funciona, a resposta volta com status 200 OK, Content-Type application/json e o conteúdo do arquivo no corpo. Se o arquivo não puder ser lido, o bloco catch devolve status 500 com uma mensagem de erro em JSON. O servidor foi executado no terminal, na pasta do projeto, com o comando .\\mvnw.cmd spring-boot:run.",
+    "responsavelPreenchimento": "Aquiles Souza"
+  },
+  "secao4": {
+    "titulo": "Conclusão",
+    "principalDificuldadeInicial": "A dificuldade maior no início foi o entendimento de toda estrutura java e a função de cada componente. Após o entendimento, ficou mais compreensível. Passamos por uns erros de atenção, a aplicação deixou de iniciar depois que a classe principal foi renomeada, o que foi resolvido executando o Maven com clean, e o arquivo JSON estava inválido por vírgulas sobrando, mesmo que o servidor respondesse com status 200.",
+    "avaliacao": "O Spring Boot reduz configurações repetitivas e oferece recursos para desenvolver servidores HTTP em Java. O fato configurar o servidor automaticamente compensa as particularidades de sintaxe e estrutura. ",
+    "recomendacaoFinal": "Recomendamos Java com Spring Boot para aplicações back-end que exigem regras de negócio, integrações e manutenção contínua. Para serviços menores, alternativas mais simples podem ser consideradas."
+  },
+  "referencias": [
+    {"titulo": "Spring Boot Reference Documentation", "url": "https://docs.spring.io/spring-boot/reference/"},
+    {"titulo": "Spring Boot System Requirements", "url": "https://docs.spring.io/spring-boot/system-requirements.html"},
+    {"titulo": "Building an Application with Spring Boot", "url": "https://spring.io/guides/gs/spring-boot/"},
+    {"titulo": "Building a RESTful Web Service", "url": "https://spring.io/guides/gs/rest-service/"},
+    {"titulo": "Spring Initializr", "url": "https://start.spring.io/"}
+  ]
+}
