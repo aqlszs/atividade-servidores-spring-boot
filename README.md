@@ -14,18 +14,11 @@ No terminal, na pasta do projeto:
 .\mvnw.cmd spring-boot:run
 ```
 
-No Linux ou macOS: `./mvnw spring-boot:run`
+## Endereço
 
-O servidor está no ar quando o console mostrar `Started ServidoresApplication`.
+| http://localhost:8080/index-servidor.html | json com a documentação estruturado em uma página HTML |
 
-## O que abrir
-
-| Endereço | O que mostra |
-|---|---|
-| http://localhost:8080/ | a documentação em JSON (rota principal) |
-| http://localhost:8080/index-servidor.html | a mesma documentação em uma página HTML |
-
-## Onde está cada coisa
+## Arquivos Principais
 
 - `src/main/java/com/example/servidores/controller/DocumentacaoController.java`: responde a rota `/`
 - `src/main/resources/documentacao.json`: o conteúdo da documentação
